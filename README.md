@@ -1,0 +1,2 @@
+# LtrinhWebNC
+bruhbruh
