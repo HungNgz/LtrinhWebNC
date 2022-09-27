@@ -1,0 +1,43 @@
+server ubuntu : 192.168.82.3
+desk: 192.168.82.4            /24
+desk2: 192.168.82.5
+host: 192.168.31.76
+
+trên 2 máy desk , desk 2 cài sẵn putty;
+-cài dịch vụ ssh cho server ubuntu : sudo apt install openssh-server 
+- kiểm tra dịch vụ đã bật chưa : sudo systemctl status ssh 
+
+
+
+
+cấu hình firewall ufw cho phép admin desk [192.168.82.4] ssh vào server:
+- Nếu mặc định chưa cài sẵn UFW thì cài đặt bằng : sudo apt-get install ufw
+- Sau khi cài phải kích hoạt: sudo ufw enable/disable 
+- Mặc định khi ufw kích hoạt sẽ deny all connection incoming - allow all conection outcoming
+- Tạo 1 rule trên ufw cho phép máy desk [192.168.82.8] truy cập ssh qua cổng 22 tói server: sudo ufw allow from [ip addess guest] to any port [number port access] 
+- Test thử trên 3 máy tới server bằng cmd/terminal : ssh hung@192.168.82.3
+- có thể sửa port bằng sudo cd /etc/ssh/ tree -a -> sudo nano /etc/ssh/ssh_config. sửa port ... 
+- Kiểm tra rule : sudo ufw numbered - xóa rule sudo ufw delete  
+
+Cấu hình NFS trên  ubuntu cho phép toàn bộ máy khách truy cập file: https://2error.net/cach-cai-dat-va-cau-hinh-may-chu-nfs-tren-ubuntu-18-04 
+- Check xem bật log chưa : sudo ufw status verbose 
+- Nếu chưa bật thì bật bằng : sudo ufw logginf on
+-Các trạng thái của logging : off ( Không lưu lại log) 
+enable(low) : Ghi lại các phiên kết nối bị chặn hoặc được phép theo chính sách đã xác định
+enable(medium): tương tự low, nhưng ghi log với cả những kêt nối mà không phù hợp với chính xác 
+high-full : ghi lại tất cả các phiên cái nào cũng ghi.
+Thay đổi bằng lệnh: sudo ufw logging low-medium-hgih-full
+-Logg lưu trong : sudo ls / var / log / ufw * 
+-Để nhật kí này hoạt động thì phải bật Rsylog : ktra bằng service rsyslog status 
+- Truy cập vào đọc log : sudo less /var/log/ufw*
+ 1 số trường cần quan tâm: In= thiết bị nhận lưu lượng đến
+			    out= thiết bị cho lưu lượng đi
+			     mac= địa chỉ mac của thiết bị
+			      src= ip source địa chỉ nguồn của kết nối
+				dst= ip destination địa chỉ đích của kết nối
+				 len= length độ dài gói tin
+			          ttl= time to live, hops mà gói tin sẽ sống trước khi bị loại bỏ
+				   proto= Giao thức đã sử dụng
+				    các trường spt-dpt= source port-destport  
+uncomlicated firewall
+
